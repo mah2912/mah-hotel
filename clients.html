@@ -49,6 +49,9 @@
           <div class="col-md-3"><button class="btn btn-primary w-100" type="submit">Ajouter</button></div>
         </form>
       </div>
+      <button class="btn btn-success" onclick="exportToPDF()">
+  <i class="fa fa-file-pdf me-2"></i>Exporter PDF
+</button>
       <div class="col-md-4">
         <canvas id="clientChart" height="180"></canvas>
         <div class="mt-2">Total clients : <span id="totalClients">0</span></div>
@@ -89,7 +92,31 @@
     </div>
   </main>
 </div>
-
+<!-- Modal d'édition -->
+<div class="modal fade" id="editClientModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modifier Client</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editClientForm">
+          <input type="hidden" id="editId">
+          <div class="mb-3">
+            <label class="form-label">Nom</label>
+            <input type="text" id="editNom" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Prénom</label>
+            <input type="text" id="editPrenom" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Firebase et Script JS -->
 <script type="module" src="clients.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
