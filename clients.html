@@ -2,16 +2,15 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Clients | Mah Hotel</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="clients.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
 
 <div class="d-flex" id="wrapper">
-  <!-- Sidebar -->
   <aside class="sidebar shadow">
     <div class="sidebar-header text-center py-4">
       <h4 class="text-white"><i class="fa-solid fa-hotel me-2"></i>Mah Hotel</h4>
@@ -25,83 +24,75 @@
     </ul>
   </aside>
 
-  <!-- Content -->
   <main class="content p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold">Clients</h2>
-      <button class="btn btn-primary" id="btnAddClient"><i class="fa fa-plus me-2"></i>Ajouter Client</button>
+      <h2 class="fw-bold">Gestion des Clients</h2>
+      <span class="badge bg-light text-dark">Clients enregistrés</span>
     </div>
 
-    <!-- Recherche -->
-    <div class="mb-3">
-      <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un client..." />
+    <div class="row g-4 mb-4">
+      <div class="col-md-8">
+        <form id="addClientForm" class="row g-2">
+          <div class="col-md-3"><input type="text" id="nom" class="form-control" placeholder="Nom" required></div>
+          <div class="col-md-3"><input type="text" id="prenom" class="form-control" placeholder="Prénom" required></div>
+          <div class="col-md-3"><input type="email" id="email" class="form-control" placeholder="Email" required></div>
+          <div class="col-md-3"><input type="text" id="telephone" class="form-control" placeholder="Téléphone" required></div>
+          <div class="col-md-3"><input type="text" id="cin" class="form-control" placeholder="CIN" required></div>
+          <div class="col-md-3">
+            <select id="sexe" class="form-select" required>
+              <option value="" disabled selected>Sexe</option>
+              <option value="Homme">Homme</option>
+              <option value="Femme">Femme</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+          <div class="col-md-3"><button class="btn btn-primary w-100" type="submit">Ajouter</button></div>
+        </form>
+      </div>
+      <div class="col-md-4">
+        <canvas id="clientChart" height="180"></canvas>
+        <div class="mt-2">Total clients : <span id="totalClients">0</span></div>
+      </div>
     </div>
 
-    <!-- Table Clients -->
+    <div class="row g-3 align-items-center mb-3">
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Recherche..." id="searchInput">
+      </div>
+      <div class="col-md-3">
+        <select id="filterSexe" class="form-select">
+          <option value="Tous">Tous</option>
+          <option value="Homme">Homme</option>
+          <option value="Femme">Femme</option>
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
+    </div>
+
     <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle">
+      <table class="table table-bordered table-hover">
         <thead class="table-light">
           <tr>
+            <th>#</th>
             <th>Nom</th>
             <th>Prénom</th>
             <th>Email</th>
             <th>Téléphone</th>
-            <th>Actions</th>
+            <th>CIN</th>
+            <th>Sexe</th>
+            <th>Date</th>
+            <th>Action</th>
           </tr>
         </thead>
-        <tbody id="clientsTableBody">
-          <!-- Rempli par JS -->
-        </tbody>
+        <tbody id="clientsTable"></tbody>
       </table>
     </div>
   </main>
 </div>
 
-<!-- Modal Ajout/Edition Client -->
-<div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="clientModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="clientForm" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="clientModalLabel">Ajouter un client</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="clientId" />
-        <div class="mb-3">
-          <label for="nom" class="form-label">Nom</label>
-          <input type="text" id="nom" class="form-control" required />
-        </div>
-        <div class="mb-3">
-          <label for="prenom" class="form-label">Prénom</label>
-          <input type="text" id="prenom" class="form-control" required />
-        </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" id="email" class="form-control" required />
-        </div>
-        <div class="mb-3">
-          <label for="telephone" class="form-label">Téléphone</label>
-          <input type="tel" id="telephone" class="form-control" pattern="^\+?\d{8,15}$" placeholder="+261..." required />
-          <div class="form-text">Format international, ex: +261 34 12 345 67</div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Scripts -->
+<!-- Firebase et Script JS -->
+<script type="module" src="clients.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-<script src="firebase-config.js"></script>
-<script src="clients.js"></script>
-
 </body>
 </html>
