@@ -1,4 +1,7 @@
-// Configuration Firebase CORRECTE (remplacez les valeurs fictives)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+// Configuration Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCkwwwboM3lGW_284ZN5RZWJmmSL7JwkJU",
   authDomain: "mah-hotel.firebaseapp.com",
@@ -9,89 +12,70 @@ const firebaseConfig = {
 };
 
 // Initialisation Firebase
-if (typeof firebase === 'undefined') {
-  console.error("Firebase non chargé ! Vérifiez les scripts");
-} else {
-  try {
-    // Vérifie si Firebase est déjà initialisé
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const clientsCollection = collection(db, "clients");
 
-    // Référence à la collection clients
-    const clientsCollection = db.collection("clients");
+// Chargement des clients
+function loadClients() {
+  onSnapshot(clientsCollection, (querySnapshot) => {
+    const clientsTable = document.getElementById("clientsTable");
+    clientsTable.innerHTML = "";
 
-    // Chargement des clients
-    function loadClients() {
-      clientsCollection.onSnapshot((querySnapshot) => {
-        const clientsTable = document.getElementById("clientsTable");
-        clientsTable.innerHTML = "";
-        
-        querySnapshot.forEach((doc) => {
-          const client = doc.data();
-          clientsTable.innerHTML += `
-            <tr>
-              <td>${client.nom || ''}</td>
-              <td>${client.prenom || ''}</td>
-              <td>${client.email || ''}</td>
-              <td>${client.telephone || ''}</td>
-              <td>${client.cin || ''}</td>
-              <td>${client.sexe || ''}</td>
-              <td>${client.date_ajout || ''}</td>
-              <td>
-                <button class="btn btn-sm btn-warning" onclick="editClient('${doc.id}')">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-sm btn-danger" onclick="deleteClient('${doc.id}')">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          `;
-        });
-      }, (error) => {
-        console.error("Erreur Firestore:", error);
-      });
-    }
-
-    // Ajout d'un client
-    document.getElementById("addClientForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      
-      const clientData = {
-        nom: document.getElementById("nom").value.trim(),
-        prenom: document.getElementById("prenom").value.trim(),
-        email: document.getElementById("email").value.trim(),
-        telephone: document.getElementById("telephone").value.trim(),
-        cin: document.getElementById("cin").value.trim(),
-        sexe: document.getElementById("sexe").value,
-        date_ajout: new Date().toLocaleDateString('fr-FR')
-      };
-
-      try {
-        await clientsCollection.add(clientData);
-        e.target.reset();
-        alert("Client ajouté avec succès !");
-      } catch (error) {
-        console.error("Erreur d'ajout:", error);
-        alert("Erreur: " + error.message);
-      }
+    querySnapshot.forEach((docSnap) => {
+      const client = docSnap.data();
+      clientsTable.innerHTML += `
+        <tr>
+          <td>${client.nom || ''}</td>
+          <td>${client.prenom || ''}</td>
+          <td>${client.email || ''}</td>
+          <td>${client.telephone || ''}</td>
+          <td>${client.cin || ''}</td>
+          <td>${client.sexe || ''}</td>
+          <td>${client.date_ajout || ''}</td>
+          <td>
+            <button class="btn btn-sm btn-warning" onclick="editClient('${docSnap.id}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="deleteClient('${docSnap.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `;
     });
-
-    // Charge les clients au démarrage
-    loadClients();
-
-  } catch (error) {
-    console.error("Erreur d'initialisation Firebase:", error);
-  }
+  });
 }
 
-// Fonctions globales pour les boutons
+// Ajout d'un client
+document.getElementById("addClientForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const clientData = {
+    nom: document.getElementById("nom").value.trim(),
+    prenom: document.getElementById("prenom").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    telephone: document.getElementById("telephone").value.trim(),
+    cin: document.getElementById("cin").value.trim(),
+    sexe: document.getElementById("sexe").value,
+    date_ajout: new Date().toLocaleDateString('fr-FR')
+  };
+
+  try {
+    await addDoc(clientsCollection, clientData);
+    e.target.reset();
+    alert("Client ajouté !");
+  } catch (error) {
+    console.error("Erreur d'ajout:", error);
+    alert("Erreur: " + error.message);
+  }
+});
+
+// Supprimer un client
 window.deleteClient = async (id) => {
   if (confirm("Supprimer ce client ?")) {
     try {
-      await firebase.firestore().collection("clients").doc(id).delete();
+      await deleteDoc(doc(db, "clients", id));
       alert("Client supprimé");
     } catch (error) {
       console.error("Erreur suppression:", error);
@@ -99,14 +83,18 @@ window.deleteClient = async (id) => {
   }
 };
 
+// Modifier un client (nom)
 window.editClient = async (id) => {
-  const newNom = prompt("Nouveau nom:");
-  if (newNom) {
+  const nouveauNom = prompt("Nouveau nom :");
+  if (nouveauNom) {
     try {
-      await firebase.firestore().collection("clients").doc(id).update({ nom: newNom });
-      alert("Client modifié");
+      await updateDoc(doc(db, "clients", id), { nom: nouveauNom });
+      alert("Nom mis à jour");
     } catch (error) {
       console.error("Erreur modification:", error);
     }
   }
 };
+
+// Démarrage
+loadClients();
