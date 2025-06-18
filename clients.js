@@ -1,10 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, onSnapshot,
-  deleteDoc, doc, updateDoc, query, where
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// Configuration Firebase
+// Configuration Firebase (identique à avant)
 const firebaseConfig = {
   apiKey: "AIzaSyCkwwwboM3lGW_284ZN5RZWJmmSL7JwkJU",
   authDomain: "mah-hotel.firebaseapp.com",
@@ -14,9 +8,11 @@ const firebaseConfig = {
   appId: "1:389877777937:web:1c631c128857be29ab53b0"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Initialisation
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.getFirestore(app);
 const clientsCollection = collection(db, "clients");
+
 
 // Éléments DOM
 const addClientForm = document.getElementById("addClientForm");
