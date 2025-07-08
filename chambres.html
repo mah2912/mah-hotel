@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chambres | Mah Hotel</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="dashboard.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="chambres.css">
 </head>
 <body>
 
@@ -19,7 +19,7 @@
     <ul class="nav flex-column px-3">
       <li class="nav-item mb-2"><a href="dashboard.html" class="nav-link"><i class="fa fa-chart-line me-2"></i>Dashboard</a></li>
       <li class="nav-item mb-2"><a href="clients.html" class="nav-link"><i class="fa fa-users me-2"></i>Clients</a></li>
-      <li class="nav-item mb-2"><a href="#" class="nav-link active"><i class="fa fa-bed me-2"></i>Chambres</a></li>
+      <li class="nav-item mb-2"><a href="chambres.html" class="nav-link active"><i class="fa fa-bed me-2"></i>Chambres</a></li>
       <li class="nav-item mb-2"><a href="reservation.html" class="nav-link"><i class="fa fa-calendar-check me-2"></i>Réservations</a></li>
       <li class="nav-item mt-4"><a href="index.html" class="nav-link text-danger"><i class="fa fa-sign-out-alt me-2"></i>Déconnexion</a></li>
     </ul>
@@ -28,108 +28,139 @@
   <!-- Content -->
   <main class="content p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold">Gestion des Chambres</h2>
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#roomModal">
+      <h2 class="fw-bold">Gestion des chambres</h2>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#chambreModal">
         <i class="fa fa-plus me-2"></i>Ajouter une chambre
       </button>
     </div>
 
-    <!-- Filtres et recherche -->
-    <div class="row mb-3">
+    <!-- Stat Cards -->
+    <div class="row g-4 mb-4">
       <div class="col-md-4">
-        <input type="text" id="searchRoom" class="form-control" placeholder="Rechercher une chambre..."/>
+        <div class="card stat-card shadow-sm">
+          <div class="card-body">
+            <h6>Total Chambres</h6>
+            <h3 id="totalChambres">0</h3>
+            <i class="fa fa-bed fa-2x text-primary float-end"></i>
+          </div>
+        </div>
       </div>
-      <div class="col-md-3">
-        <select id="filterType" class="form-select">
-          <option value="">Tous types</option>
-          <option value="Simple">Simple</option>
-          <option value="Double">Double</option>
-          <option value="Suite">Suite</option>
-        </select>
+      <div class="col-md-4">
+        <div class="card stat-card shadow-sm">
+          <div class="card-body">
+            <h6>Disponibles</h6>
+            <h3 id="totalDisponibles">0</h3>
+            <i class="fa fa-check-circle fa-2x text-success float-end"></i>
+          </div>
+        </div>
       </div>
-      <div class="col-md-2">
-        <button class="btn btn-success" id="exportRoomsCSV"><i class="fa fa-file-csv me-1"></i>Exporter CSV</button>
-      </div>
-      <div class="col-md-3 text-end">
-        <span>Total chambres: <strong id="totalRooms">0</strong></span>
+      <div class="col-md-4">
+        <div class="card stat-card shadow-sm">
+          <div class="card-body">
+            <h6>Occupées</h6>
+            <h3 id="totalOccupees">0</h3>
+            <i class="fa fa-times-circle fa-2x text-danger float-end"></i>
+          </div>
+        </div>
       </div>
     </div>
+<div class="row mb-3">
+  <div class="col-md-4">
+    <input type="text" class="form-control" placeholder="Rechercher..." id="searchInput">
+  </div>
+  <div class="col-md-4">
+    <select class="form-select" id="filterType">
+      <option value="">-- Filtrer par type --</option>
+      <option value="Simple">Simple</option>
+      <option value="Couple">Couple</option>
+      <option value="Famille">Famille</option>
+      <option value="Bungalow">Bungalow</option>
+      <option value="Villa">Villa</option>
+      <option value="Penthouse">Penthouse</option>
+    </select>
+  </div>
+  <div class="col-md-4">
+    <select class="form-select" id="filterStatut">
+      <option value="">-- Filtrer par statut --</option>
+      <option value="disponible">Disponible</option>
+      <option value="occupée">Occupée</option>
+    </select>
+  </div>
+</div>
 
-    <!-- Table chambres -->
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle" id="roomTable">
-        <thead class="table-light">
-          <tr>
-            <th>Numéro</th>
-            <th>Type</th>
-            <th>Prix (€)</th>
-            <th>Statut</th>
-            <th>Description</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Dynamique via JS -->
-        </tbody>
-      </table>
+    <!-- Table -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <input type="text" class="form-control mb-3" placeholder="Rechercher..." id="searchInput">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Prix</th>
+                <th>Statut</th>
+                <th>Photo</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="chambreTableBody">
+              <!-- Lignes JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-
-    <!-- Pagination -->
-    <nav aria-label="Pagination chambres">
-      <ul class="pagination justify-content-center" id="paginationRooms"></ul>
-    </nav>
   </main>
 </div>
 
-<!-- Modal ajout/modification chambre -->
-<div class="modal fade" id="roomModal" tabindex="-1" aria-labelledby="roomModalLabel" aria-hidden="true">
+<!-- Modal -->
+<div class="modal fade" id="chambreModal" tabindex="-1" aria-labelledby="chambreModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form id="roomForm" class="modal-content">
+    <form class="modal-content" id="chambreForm">
       <div class="modal-header">
-        <h5 class="modal-title" id="roomModalLabel">Ajouter une chambre</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        <h5 class="modal-title">Ajouter une chambre</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
+        <input type="hidden" id="chambreId">
         <div class="mb-3">
-          <label for="roomNumber" class="form-label">Numéro de chambre</label>
-          <input type="text" class="form-control" id="roomNumber" required pattern="\\d+" title="Numéro doit être un nombre"/>
-        </div>
-        <div class="mb-3">
-          <label for="roomType" class="form-label">Type de chambre</label>
-          <select class="form-select" id="roomType" required>
-            <option value="" disabled selected>Choisir un type</option>
+          <label for="type" class="form-label">Type</label>
+          <select id="type" class="form-select" required>
+            <option value="">-- Choisir --</option>
             <option value="Simple">Simple</option>
-            <option value="Double">Double</option>
-            <option value="Suite">Suite</option>
+            <option value="Couple">Couple</option>
+            <option value="Famille">Famille</option>
+            <option value="Bungalow">Bungalow</option>
+            <option value="Villa">Villa</option>
+            <option value="Penthouse">Penthouse</option>
           </select>
         </div>
         <div class="mb-3">
-          <label for="roomPrice" class="form-label">Prix (€)</label>
-          <input type="number" class="form-control" id="roomPrice" min="0" step="0.01" required />
-        </div>
-        <div class="mb-3">
-          <label for="roomStatus" class="form-label">Statut</label>
-          <select class="form-select" id="roomStatus" required>
-            <option value="" disabled selected>Choisir un statut</option>
-            <option value="Disponible">Disponible</option>
-            <option value="Occupée">Occupée</option>
-            <option value="En maintenance">En maintenance</option>
+          <label for="statut" class="form-label">Statut</label>
+          <select id="statut" class="form-select" required>
+            <option value="disponible">Disponible</option>
+            <option value="occupée">Occupée</option>
           </select>
         </div>
         <div class="mb-3">
-          <label for="roomDesc" class="form-label">Description</label>
-          <textarea class="form-control" id="roomDesc" rows="3" placeholder="(optionnel)"></textarea>
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" rows="2"></textarea>
         </div>
       </div>
       <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Enregistrer</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
       </div>
     </form>
   </div>
 </div>
 
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script src="chambres.js"></script>
 </body>
 </html>

@@ -1,0 +1,67 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f6f9;
+}
+
+#wrapper {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: linear-gradient(to bottom, #0d1b2a, #1b263b);
+  color: #fff;
+  position: fixed;
+  height: 100%;
+}
+
+.sidebar .nav-link {
+  color: #adb5bd;
+  padding: 12px 16px;
+  border-radius: 6px;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+  background: #e9ecef;
+  color: #212529;
+  font-weight: bold;
+}
+
+.content {
+  margin-left: 240px;
+  flex-grow: 1;
+  overflow-y: auto;
+  background: url('https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1470&q=80') no-repeat center/cover;
+  backdrop-filter: blur(3px);
+}
+.card {
+  border: none;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.stat-card h6 {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.stat-card h3 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.badge-disponible {
+  background-color: #28a745;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.badge-occupée {
+  background-color: #dc3545;
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+}
