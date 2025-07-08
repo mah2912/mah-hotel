@@ -110,12 +110,33 @@ form.addEventListener('submit', e => {
 });
 
 // 🔎 Recherche
-searchInput.addEventListener("input", () => {
-  const q = searchInput.value.toLowerCase();
+const filterType = document.getElementById('filterType');
+const filterStatut = document.getElementById('filterStatut');
+
+// 🔎 Mise à jour filtrage
+function appliquerFiltreRecherche() {
+  const search = searchInput.value.toLowerCase();
+  const typeFiltre = filterType.value.toLowerCase();
+  const statutFiltre = filterStatut.value.toLowerCase();
+
   Array.from(tableBody.rows).forEach(row => {
-    row.style.display = row.innerText.toLowerCase().includes(q) ? "" : "none";
+    const text = row.innerText.toLowerCase();
+    const type = row.cells[1].innerText.toLowerCase();
+    const statut = row.cells[3].innerText.toLowerCase();
+
+    const matchRecherche = text.includes(search);
+    const matchType = !typeFiltre || type === typeFiltre;
+    const matchStatut = !statutFiltre || statut.includes(statutFiltre);
+
+    row.style.display = matchRecherche && matchType && matchStatut ? "" : "none";
   });
-});
+}
+
+// 🔁 Appliquer le filtre à chaque changement
+searchInput.addEventListener("input", appliquerFiltreRecherche);
+filterType.addEventListener("change", appliquerFiltreRecherche);
+filterStatut.addEventListener("change", appliquerFiltreRecherche);
+
 
 // 🔁 Charger au démarrage
 chargerChambres();

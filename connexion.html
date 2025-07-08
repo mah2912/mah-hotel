@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion | Mah Hotel</title>
+
+  <!-- Import Bootstrap et Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+    }
+
+    .login-container {
+      max-width: 400px;
+      margin: auto;
+      margin-top: 10vh;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-google {
+      background-color: white;
+      border: 1px solid #ccc;
+      color: #444;
+    }
+
+    .btn-google:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h3 class="text-center mb-4"><i class="fa-solid fa-hotel me-2"></i>Mah Hotel</h3>
+    
+    <!-- Formulaire Email/Password -->
+    <form id="loginForm">
+      <div class="mb-3">
+        <label for="email" class="form-label">Adresse Email</label>
+        <input type="email" class="form-control" id="email" required />
+      </div>
+      <div class="mb-3 position-relative">
+        <label for="password" class="form-label">Mot de passe</label>
+        <input type="password" class="form-control" id="password" required />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Connexion</button>
+    </form>
+
+    <hr class="my-3">
+
+    <!-- Bouton Google -->
+    <button id="googleLogin" class="btn btn-google w-100 mb-2">
+      <i class="fab fa-google me-2"></i>Se connecter avec Google
+    </button>
+
+    <!-- Lien mot de passe oublié -->
+    <div class="text-center mt-2">
+      <a href="#" id="forgotPassword">Mot de passe oublié ?</a>
+    </div>
+
+    <!-- Message -->
+    <div id="message" class="mt-3 text-center text-danger"></div>
+  </div>
+
+  <!-- Firebase JS -->
+  <script type="module">
+    // Import des modules Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkwwwboM3lGW_284ZN5RZWJmmSL7JwkJU",
+      authDomain: "mah-hotel.firebaseapp.com",
+      projectId: "mah-hotel",
+      storageBucket: "mah-hotel.appspot.com",
+      messagingSenderId: "389877777937",
+      appId: "1:389877777937:web:1c631c128857be29ab53b0"
+    };
+
+    // Initialisation
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    // Références aux éléments HTML
+    const loginForm = document.getElementById('loginForm');
+    const googleLogin = document.getElementById('googleLogin');
+    const forgotPassword = document.getElementById('forgotPassword');
+    const message = document.getElementById('message');
+
+    // Fonction : Ajouter profil Firestore
+    async function addUserProfile(user, method) {
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || "",
+        method: method,
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+    }
+
+    // Connexion Email/Password
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      message.textContent = "";
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        await addUserProfile(userCredential.user, "email");
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        message.textContent = "Erreur : " + err.message;
+      }
+    });
+
+    // Connexion avec Google
+    googleLogin.addEventListener('click', async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        await addUserProfile(result.user, "google");
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        message.textContent = "Erreur Google : " + err.message;
+      }
+    });
+
+    // Réinitialisation de mot de passe
+    forgotPassword.addEventListener('click', async () => {
+      const email = prompt("Entrez votre email pour réinitialiser :");
+      if (email) {
+        try {
+          await sendPasswordResetEmail(auth, email);
+          alert("Email de réinitialisation envoyé !");
+        } catch (err) {
+          alert("Erreur : " + err.message);
+        }
+      }
+    });
+  </script>
+</body>
+</html>
